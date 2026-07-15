@@ -1,0 +1,4 @@
+locust~=2.20.0
+coverage~=7.3.0
+pytest~=7.4.0
+pytest-cov~=4.1.0
