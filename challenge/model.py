@@ -15,6 +15,7 @@ from sklearn.preprocessing import OrdinalEncoder
 # (donde se ejecutan tanto los tests como el contenedor de la API).
 _PRODUCTOS_PATH = os.path.join("dataset", "productos.csv")
 _STOCK_PATH = os.path.join("dataset", "stock.csv")
+_MOVIMIENTOS_PATH = os.path.join("dataset", "movimientos.csv")
 
 _CATEGORICAL_FEATURES = [
     "gtin",
@@ -271,6 +272,17 @@ class ReplenishmentModel:
         self._model = pipeline
 
     # ------------------------------------------------------------------
+    # Autoentrenamiento perezoso (usado por predict() cuando no hay un
+    # modelo entrenado ni cargado todavía).
+    # ------------------------------------------------------------------
+    def _auto_train(self) -> None:
+        movimientos = pd.read_csv(_MOVIMIENTOS_PATH)
+        features, target = self.preprocess(
+            data=movimientos, target_column="cantidad"
+        )
+        self.fit(features=features, target=target)
+
+    # ------------------------------------------------------------------
     # predict
     # ------------------------------------------------------------------
     def predict(
@@ -287,14 +299,18 @@ class ReplenishmentModel:
             (List[dict]): predicciones con keys 'fecha' y 'cantidad'.
         """
         if self._model is None:
-            raise RuntimeError("El modelo no ha sido entrenado ni cargado.")
+            # Autoentrenamiento perezoso: si nadie llamó fit()/load() antes,
+            # se entrena una vez con el dataset canónico del proyecto. Esto
+            # permite que predict() funcione "out of the box" (por ejemplo,
+            # en la API, o en cualquier consumidor que solo quiera predecir
+            # sin orquestar manualmente el pipeline de entrenamiento).
+            self._auto_train()
 
         enriched = self._enrich_with_history(features)
         model_input = enriched[_MODEL_FEATURES]
         predictions = self._model.predict(model_input)
         # El consumo no puede ser negativo.
         predictions = np.clip(predictions, a_min=0, a_max=None)
-
         fechas = pd.to_datetime(features["fecha"]).dt.strftime("%Y-%m-%d")
 
         return [
