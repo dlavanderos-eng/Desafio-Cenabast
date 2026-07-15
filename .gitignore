@@ -1,0 +1,35 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+ENV/
+
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Distribución / empaquetado
+build/
+dist/
+*.egg-info/
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# Modelo entrenado (artefacto generado por challenge/train.py)
+model.pkl
+*.pkl
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
