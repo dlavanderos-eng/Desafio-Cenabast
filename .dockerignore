@@ -1,0 +1,38 @@
+# Entornos virtuales
+venv/
+env/
+.venv/
+ENV/
+
+# Python cache / bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Control de versiones
+.git/
+.gitignore
+
+# Tests / coverage / reportes
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+reports/
+
+# Modelo entrenado (se genera dentro del contenedor si hace falta)
+model.pkl
+*.pkl
+
+# Credenciales - NUNCA deben entrar a la imagen
+*.json
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
